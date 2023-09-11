@@ -1,0 +1,29 @@
+# Copyright (c) 2023 Golioth, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+manifest:
+  version: 0.8
+
+  projects:
+    - name: golioth
+      path: modules/lib/golioth
+      revision: v0.7.1
+      url: https://github.com/golioth/golioth-zephyr-sdk
+      west-commands: scripts/west-commands.yml
+      import:
+        file: west-zephyr.yml
+        path-prefix: deps
+        name-allowlist:
+          - zephyr
+          - cmsis
+          - hal_nordic
+          - mbedtls
+          - mbedtls-nrf
+          - mcuboot
+          - net-tools
+          - qcbor
+          - segger
+          - zcbor
+
+  self:
+    path: app
