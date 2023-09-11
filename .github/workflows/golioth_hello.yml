@@ -1,0 +1,60 @@
+name: Twister Golioth Hello
+
+on:
+#   push:
+#     branches: [ main ]
+#   pull_request:
+#   schedule:
+#     - cron: "0 0 * * *"
+
+  workflow_dispatch:
+
+jobs:
+  hello_world_on_hardware:
+    runs-on: [self-hosted, has-nrf52840dk]
+
+    env:
+      ZEPHYR_SDK_INSTALL_DIR: ${HOME}/zephyr-sdk-0.16.0
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: app
+
+      - name: Install west
+        run: |
+          pip install wheel west
+
+      - name: Init and update west
+        run: |
+          mkdir -p .west
+          cat <<EOF > .west/config
+          [manifest]
+          path = app
+          file = west.yml
+          EOF
+
+          west update -o=--depth=1 -n
+          git config --global user.email user@git-scm.com
+          git config --global user.name "Git User"
+          west patch
+
+      - name: Pip dependencies
+        run: |
+          pip install -r deps/zephyr/scripts/requirements.txt
+
+      - name: Run Twister on Golioth Hello sample
+        run: |
+          source ${HOME}/env_runner_webinar_demo.sh
+
+          deps/zephyr/scripts/twister -T app -s sample.golioth.hello.psk.fast.default \
+          --device-testing --west-flash=--recover \
+          --hardware-map ${HOME}/hardware-map-webinar-demo.yml -vvv
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: twister-artifacts
+          path: |
+            twister-out/**/*.log
