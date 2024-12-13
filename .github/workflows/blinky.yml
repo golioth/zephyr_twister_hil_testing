@@ -50,7 +50,7 @@ jobs:
           tar czf build.tar.gz build/zephyr/zephyr.hex
 
       - name: Upload tarball
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build.tar.gz
           path: deps/zephyr/samples/basic/blinky/build.tar.gz
@@ -72,7 +72,7 @@ jobs:
           path: blinky-test
 
       - name: Download build tarball
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: build.tar.gz
           path: blinky-test/samples/blinky
